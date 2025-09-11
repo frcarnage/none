@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💖For Youuuuu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💖 Just for You</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -60,6 +60,7 @@
       margin-top: 15px;
       color: #777;
       font-size: 14px;
+      min-height: 18px;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -70,40 +71,108 @@
 <body>
   <div class="container" id="passwordScreen">
     <h1>Enter Password</h1>
-    <input type="password" id="pass" placeholder="Password">
+    <input type="password" id="pass" placeholder="Password" autocomplete="off" />
     <button onclick="checkPassword()">Unlock 💖</button>
     <p id="message"></p>
   </div>
-  <script>
-    const password = "love123"; 
-    const accessKey = "visitedOnce"; 
 
-    // Mock "server" counter using localStorage for demo (replace with real DB)
-    const deviceCountKey = "deviceCount"; 
-    let deviceCount = localStorage.getItem(deviceCountKey) || 0;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getDatabase, ref, get, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
 
-    if(localStorage.getItem(accessKey)){
-      document.getElementById("message").innerText = "Already accessed on this device.";
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC3Vc-ep4Q3FRVBBBdTGNDyOBtBt_Jkwh0",
+      authDomain: "app-336ee.firebaseapp.com",
+      databaseURL: "https://app-336ee-default-rtdb.firebaseio.com",
+      projectId: "app-336ee",
+      storageBucket: "app-336ee.firebasestorage.app",
+      messagingSenderId: "733344434565",
+      appId: "1:733344434565:web:7c4ba3d136b049fefa1cec",
+      measurementId: "G-N783PHKGC9"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    const MAX_DEVICES = 2;
+    const PASSWORD = "love123";
+    const ACCESS_KEY = "visitedOnce";
+    const DEVICE_KEY = "deviceId";
+
+    const messageElem = document.getElementById("message");
+    const passwordScreen = document.getElementById("passwordScreen");
+
+    // Generate or get a unique device ID stored locally
+    function getDeviceId() {
+      let id = localStorage.getItem(DEVICE_KEY);
+      if(!id){
+        id = crypto.randomUUID();
+        localStorage.setItem(DEVICE_KEY, id);
+      }
+      return id;
     }
 
-    function checkPassword() {
-      const input = document.getElementById("pass").value;
-      if(input === password){
-        if(!localStorage.getItem(accessKey)){
-          if(deviceCount < 2){
-            localStorage.setItem(accessKey, "true");
-            localStorage.setItem(deviceCountKey, Number(deviceCount) + 1);
-            window.location.href = "home.html";
-          } else {
-            document.getElementById("passwordScreen").innerHTML = "<h2>🚫 Access Limit Exceeded (2 Devices Max)</h2>";
-          }
-        } else {
-          document.getElementById("message").innerText = "Already unlocked on this device.";
-        }
-      } else {
-        document.getElementById("message").innerText = "❌ Wrong password!";
+    // Check if current device can access (less than MAX_DEVICES connected)
+    async function canAccess() {
+      const devicesRef = ref(db, "activeDevices");
+      const snapshot = await get(devicesRef);
+      const devices = snapshot.val() || {};
+      const count = Object.keys(devices).length;
+      return count < MAX_DEVICES;
+    }
+
+    // Register this device in the Firebase Realtime DB
+    async function registerDevice(deviceId) {
+      const deviceRef = ref(db, `activeDevices/${deviceId}`);
+      await set(deviceRef, { timestamp: Date.now() });
+      onDisconnect(deviceRef).remove();
+    }
+
+    // Unregister device on page unload
+    async function unregisterDevice(deviceId) {
+      try {
+        const deviceRef = ref(db, `activeDevices/${deviceId}`);
+        await remove(deviceRef);
+      } catch (e) {
+        // ignore errors
       }
     }
+
+    async function checkPassword() {
+      const input = document.getElementById("pass").value.trim();
+
+      if(input !== PASSWORD){
+        messageElem.textContent = "❌ Wrong password!";
+        return;
+      }
+
+      const deviceId = getDeviceId();
+      if(localStorage.getItem(ACCESS_KEY) === "true"){
+        messageElem.textContent = "Already accessed on this device.";
+        return;
+      }
+
+      const allowed = await canAccess();
+      if(!allowed){
+        passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (2 Devices Max)</h2>";
+        return;
+      }
+
+      await registerDevice(deviceId);
+      localStorage.setItem(ACCESS_KEY, "true");
+      window.location.href = "home.html";
+    }
+
+    window.addEventListener("beforeunload", () => {
+      const deviceId = localStorage.getItem(DEVICE_KEY);
+      if(deviceId){
+        unregisterDevice(deviceId);
+      }
+    });
   </script>
 </body>
 </html>
