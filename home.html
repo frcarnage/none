@@ -6,7 +6,6 @@
   <title>💖 My Apology</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
   <style>
-    /* Global styles */
     body {
       margin: 0;
       font-family: 'Pacifico', cursive;
@@ -15,259 +14,106 @@
       flex-direction: column;
       min-height: 100vh;
       color: #7b2ff7;
-      overflow-x: hidden;
       justify-content: center;
       align-items: center;
-    }
-    header {
-      padding: 1.5rem 1rem 0.3rem 1rem;
       text-align: center;
-      text-shadow: 0 1px 5px rgba(255,105,135,0.8);
-      user-select: none;
+      padding: 2rem;
     }
-    header h1 {
-      margin: 0;
-      font-size: 2.75rem;
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
       color: #e92e57;
       text-shadow:
         0 0 5px #e92e57,
         0 0 10px #ff3864,
         0 0 20px #ff3864,
         0 0 40px #ff3864;
+      user-select: none;
     }
-    header p {
+    p {
       font-size: 1.3rem;
-      margin-top: 0.25rem;
+      margin-bottom: 2rem;
       color: #ff7b9c;
       font-weight: 500;
       user-select: none;
     }
-    #scene {
-      width: 90vw;
-      max-width: 600px;
-      height: 65vh;
-      max-height: 600px;
-      border-radius: 25px;
-      box-shadow: 0 10px 35px rgba(231, 27, 64, 0.5);
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(12px);
-      position: relative;
-      margin: 1rem auto;
+    button {
+      background: #ff4567;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 40px;
       cursor: pointer;
-      transition: box-shadow 0.3s ease;
+      box-shadow: 0 8px 20px rgba(255, 69, 103, 0.6);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      outline-offset: 4px;
     }
-    #scene:hover {
-      box-shadow: 0 15px 50px rgba(231, 27, 64, 0.7);
+    button:hover, button:focus {
+      background: #ff2a54;
+      box-shadow: 0 12px 30px rgba(255, 42, 84, 0.85);
     }
     #messageBox {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff4d6d;
-      color: white;
-      padding: 0.85rem 1.8rem;
-      border-radius: 45px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-shadow: 0 0 8px #720027;
+      margin-top: 2rem;
+      font-size: 1.4rem;
+      color: #ff2a54;
+      font-weight: 600;
+      min-height: 2.5em;
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      z-index: 1000;
+      transition: opacity 0.5s ease;
       user-select: none;
-      box-shadow: 0 0 20px #ff4d6d;
-      max-width: 90vw;
-      text-align: center;
     }
     footer {
+      margin-top: auto;
       padding: 1rem;
-      text-align: center;
       font-weight: 600;
       font-size: 1rem;
       color: #d6336c;
       user-select: none;
       text-shadow: 0 0 6px #ff527a;
-      margin-top: auto;
     }
-    /* Responsive typography */
     @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.9rem;
+      h1 {
+        font-size: 2rem;
       }
-      header p {
-        font-size: 1rem;
+      p {
+        font-size: 1.1rem;
       }
-      #scene {
-        height: 50vh;
-        max-height: 400px;
-        width: 95vw;
+      button {
+        font-size: 1.2rem;
+        padding: 0.85rem 1.8rem;
+      }
+      #messageBox {
+        font-size: 1.1rem;
       }
       footer {
         font-size: 0.9rem;
-      }
-      #messageBox {
-        font-size: 1rem;
-        padding: 0.7rem 1.2rem;
-      }
-    }
-    @media (max-height: 500px) {
-      #scene {
-        height: 40vh;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <h1>💖 A Message Just For You 💖</h1>
-    <p>Tap or click a floating heart to see a loving message.</p>
-  </header>
-
-  <!-- 3D Scene Container -->
-  <div id="scene"></div>
-
-  <!-- Message Box -->
-  <div id="messageBox"></div>
-
-  <!-- Footer -->
-  <footer>
-    <p>Made with ❤️ by Vinit 😓</p>
-  </footer>
-
-  <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
+  <h1>💖 A Message Just For You 💖</h1>
+  <p>Click the button below to see my special message!</p>
+  <button id="showMsgBtn" aria-live="polite" aria-label="Show my message">View Message 💌</button>
+  <div id="messageBox" role="alert" aria-atomic="true"></div>
+  <footer>Made with ❤️ by Vinit 😓</footer>
 
   <script>
-    (() => {
-      const container = document.getElementById('scene');
-      const messageBox = document.getElementById('messageBox');
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        45,
-        container.clientWidth / container.clientHeight,
-        0.1,
-        1000
-      );
-      camera.position.z = 8;
+    const button = document.getElementById('showMsgBtn');
+    const messageBox = document.getElementById('messageBox');
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setClearColor(0x000000, 0); // transparent background
-      container.appendChild(renderer.domElement);
-
-      // Resize handling
-      function onWindowResize() {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      }
-      window.addEventListener('resize', onWindowResize);
-      onWindowResize();
-
-      // Heart shape creator
-      function createHeartMesh() {
-        const x = 0, y = 0;
-        const heartShape = new THREE.Shape();
-        heartShape.moveTo(x + 0.25, y + 0.25);
-        heartShape.bezierCurveTo(x + 0.25, y + 0.25, x, y, x - 0.25, y);
-        heartShape.bezierCurveTo(x - 1, y, x - 1, y + 0.75, x - 1, y + 0.75);
-        heartShape.bezierCurveTo(x - 1, y + 1.25, x - 0.5, y + 1.75, x + 0.25, y + 2.25);
-        heartShape.bezierCurveTo(x + 1, y + 1.75, x + 1.5, y + 1.25, x + 1.5, y + 0.75);
-        heartShape.bezierCurveTo(x + 1.5, y + 0.75, x + 1.5, y, x + 0.75, y);
-        heartShape.bezierCurveTo(x + 0.5, y, x + 0.25, y + 0.25, x + 0.25, y + 0.25);
-
-        const geometry = new THREE.ShapeGeometry(heartShape);
-        const material = new THREE.MeshPhongMaterial({
-          color: 0xff4567,
-          shininess: 140,
-          specular: 0xff81ac
-        });
-        return new THREE.Mesh(geometry, material);
-      }
-
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      scene.add(ambientLight);
-
-      const directionalLight = new THREE.DirectionalLight(0xff6688, 1);
-      directionalLight.position.set(5, 10, 7);
-      scene.add(directionalLight);
-
-      // Create hearts
-      const hearts = [];
-      const heartCount = 9;
-
-      // Raycaster for detecting clicks on hearts
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      for(let i = 0; i < heartCount; i++) {
-        const heart = createHeartMesh();
-        heart.position.x = (Math.random() - 0.5) * 8;
-        heart.position.y = (Math.random() - 0.5) * 6;
-        heart.position.z = (Math.random() - 0.5) * 5;
-        const baseScale = 0.75 + Math.random() * 0.7;
-        heart.scale.set(baseScale, baseScale, baseScale);
-        scene.add(heart);
-        hearts.push({
-          mesh: heart,
-          baseScale,
-          speed: 0.001 + Math.random() * 0.002,
-          direction: Math.random() > 0.5 ? 1 : -1,
-          floatAmplitude: 0.06 + Math.random() * 0.06,
-          floatOffset: Math.random() * Math.PI * 2,
-          pulsePhase: Math.random() * 2 * Math.PI,
-        });
-      }
-
-      const clock = new THREE.Clock();
-
-      // Show message with fade effect
-      function showMessage(text) {
-        messageBox.textContent = text;
-        messageBox.style.opacity = '1';
-        setTimeout(() => {
-          messageBox.style.opacity = '0';
-        }, 4000);
-      }
-
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-        const elapsed = clock.getElapsedTime();
-        hearts.forEach(({ mesh, baseScale, speed, direction, floatAmplitude, floatOffset, pulsePhase }) => {
-          mesh.position.y += Math.sin(elapsed * 2 + floatOffset) * 0.002;
-          const scalePulse = baseScale + Math.sin(elapsed * 5 + pulsePhase) * 0.1;
-          mesh.scale.set(scalePulse, scalePulse, scalePulse);
-          mesh.rotation.z += speed * direction;
-          mesh.rotation.x += speed * direction * 0.5;
-          mesh.rotation.y += speed * direction * 0.7;
-        });
-        renderer.render(scene, camera);
-      }
-
-      animate();
-
-      // Detect clicks on hearts using raycasting
-      container.addEventListener('click', event => {
-        const rect = container.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(hearts.map(h => h.mesh));
-        if(intersects.length > 0) {
-          showMessage('💌 The message is: Always keep love in your heart! 💖');
-        } else {
-          // Optional: hide message if clicked outside
-          messageBox.style.opacity = '0';
-        }
-      });
-    })();
+    button.addEventListener('click', () => {
+      const message = 
+        "✨ Here's my loving message: Always keep love in your heart and share it generously! 💖";
+      messageBox.textContent = message;
+      messageBox.style.opacity = '1';
+      // Hide message after 6 seconds
+      setTimeout(() => {
+        messageBox.style.opacity = '0';
+      }, 6000);
+    });
   </script>
 </body>
 </html>
