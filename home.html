@@ -18,66 +18,63 @@
       align-items: center;
       text-align: center;
       padding: 2rem;
-      animation: fadeIn 1s ease;
     }
     h1 {
       font-family: 'Pacifico', cursive;
       font-size: 3rem;
       margin-bottom: 0.5rem;
-      color: #fff;
       text-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      animation: slideDown 1.2s ease;
       user-select: none;
+      animation: slideDown 1s ease;
     }
     p.description {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       margin-bottom: 2rem;
       color: #e0e0e0;
-      font-weight: 400;
-      animation: fadeInUp 1.2s ease;
-      user-select: none;
+      animation: fadeIn 1.5s ease;
     }
-    .button-container {
+    .hearts-container {
       display: flex;
-      gap: 1.5rem;
+      gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
       margin-bottom: 2rem;
-      animation: fadeIn 1.5s ease;
     }
-    button {
-      background: linear-gradient(135deg, #ff9966, #ff5e62);
-      color: white;
-      padding: 1rem 2rem;
-      font-size: 1.3rem;
-      border: none;
-      border-radius: 50px;
+    .heart {
+      font-size: 3rem;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
-      flex: 1 0 200px;
-      max-width: 220px;
-      position: relative;
-      overflow: hidden;
+      animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+      display: inline-block;
+      transition: transform 0.3s ease;
     }
-    button:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    /* Slight delay for each heart animation to make them look unique */
+    .heart:nth-child(1) { animation-delay: 0s, 0s; }
+    .heart:nth-child(2) { animation-delay: 0.5s, 1s; }
+    .heart:nth-child(3) { animation-delay: 1s, 0.5s; }
+    .heart:nth-child(4) { animation-delay: 1.5s, 1.5s; }
+    
+    .heart:hover {
+      transform: scale(1.4) rotate(10deg);
     }
-    button:active {
-      transform: scale(0.95);
+
+    /* Larger others-heart */
+    .others-heart {
+      font-size: 4rem;
+      margin-top: 1rem;
+      display: inline-block;
+      cursor: pointer;
+      animation: pulse 2s infinite;
     }
     #messageBox {
       margin-top: 2rem;
       font-size: 1.3rem;
-      color: #ffeaae;
       font-weight: 600;
+      color: #ffeaae;
       min-height: 4em;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.6s ease, transform 0.6s ease;
-      user-select: none;
       max-width: 90vw;
       line-height: 1.6;
     }
@@ -88,64 +85,77 @@
     footer {
       margin-top: auto;
       padding: 1rem;
-      font-weight: 500;
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: #dcdcdc;
-      user-select: none;
-      text-shadow: 0 0 8px rgba(0,0,0,0.4);
-      animation: fadeIn 2s ease;
     }
 
     /* Animations */
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
+    @keyframes pulse {
+      0% {transform: scale(1);}
+      50% {transform: scale(1.2);}
+      100% {transform: scale(1);}
     }
     @keyframes slideDown {
-      from {opacity:0; transform: translateY(-30px);}
+      from {opacity:0; transform: translateY(-20px);}
       to {opacity:1; transform: translateY(0);}
     }
-    @keyframes fadeInUp {
-      from {opacity:0; transform: translateY(20px);}
-      to {opacity:1; transform: translateY(0);}
+    @keyframes fadeIn {
+      from {opacity:0;}
+      to {opacity:1;}
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
+      50% { text-shadow: 0 0 15px #ff69b4, 0 0 25px #fff; }
+      100% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
     }
 
     @media (max-width: 600px) {
-      h1 {
-        font-size: 2.2rem;
-      }
-      p.description {
-        font-size: 1.1rem;
-      }
-      button {
-        font-size: 1.1rem;
-        padding: 0.85rem 1.5rem;
-        max-width: 100%;
-      }
-      #messageBox {
-        font-size: 1.1rem;
-      }
+      h1 { font-size: 2rem; }
+      .heart { font-size: 2.2rem; }
+      .others-heart { font-size: 3rem; }
+      #messageBox { font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
   <h1>💖 A Message Just For You 💖</h1>
-  <p class="description">Select an option below to see messages from me or others!</p>
-  <div class="button-container">
-    <button id="myMessageBtn" aria-live="polite" aria-label="Show my apology message">My Apology 💌</button>
-    <button id="othersMessageBtn" aria-live="polite" aria-label="Show what others think">Others' Thoughts ❤️</button>
+  <p class="description">Click on the hearts below to reveal messages!</p>
+
+  <!-- Four hearts for your own messages -->
+  <div class="hearts-container">
+    <span class="heart" data-index="0">💖</span>
+    <span class="heart" data-index="1">💖</span>
+    <span class="heart" data-index="2">💖</span>
+    <span class="heart" data-index="3">💖</span>
   </div>
-  <div id="messageBox" role="alert" aria-atomic="true"></div>
+
+  <!-- One bigger heart for "others’ thoughts" -->
+  <div>
+    <span class="others-heart" id="othersHeart" title="What others say about you">❤️</span>
+  </div>
+
+  <div id="messageBox"></div>
   <footer>Made with ❤️ by Vinit 😓</footer>
 
   <script>
-    const myMessageBtn = document.getElementById('myMessageBtn');
-    const othersMessageBtn = document.getElementById('othersMessageBtn');
     const messageBox = document.getElementById('messageBox');
-    
-    const myMessage = 
-      "Sorrryyyy naaaaaaa Anshika sorrrrryyyyyy maaaaffff kardo na, abse nai hoga na aisa, sorry galti hogya, abse jyada pareshaan nai karunga. Photo bhi dunga, VN bhi dunga, call bhi karunga, sab karunga. Sorry naaaaa😭😭😭 ek baar last maaf kardo na, mai bhi to insaan hi hu naaa. Lovee youu 😓💕";
+    const hearts = document.querySelectorAll('.heart');
+    const othersHeart = document.getElementById('othersHeart');
 
+    // Four personal messages (fill these yourself)
+    const myMessages = [
+      "", // Message 1
+      "", // Message 2
+      "", // Message 3
+      ""  // Message 4
+    ];
+
+    // Others' messages
     const othersMessages = [
       "💬 Mark Zuckerberg: MAAF KARDO NA VINIT KO 🙏",
       "💬 Narendra Modi: ANSHIKAA MAAF KARDO VINIT KO, KITNA ACCHA BACCHA HAI! 👍",
@@ -154,7 +164,7 @@
       "💬 Malala Yousafzai: Forgiveness is the key to peace in our hearts."
     ];
 
-    function showMessage(text, duration = 6000) {
+    function showMessage(text, duration = 4000) {
       messageBox.textContent = text;
       messageBox.classList.add('show');
       return new Promise(resolve => {
@@ -165,11 +175,17 @@
       });
     }
 
-    myMessageBtn.addEventListener('click', async () => {
-      await showMessage(myMessage, 7000);
+    // Click on any heart => show its own message
+    hearts.forEach(heart => {
+      heart.addEventListener('click', async (e) => {
+        const index = e.target.getAttribute('data-index');
+        const msg = myMessages[index] || "💖 (Your message here)";
+        await showMessage(msg, 6000);
+      });
     });
 
-    othersMessageBtn.addEventListener('click', async () => {
+    // Big heart cycles others’ messages
+    othersHeart.addEventListener('click', async () => {
       for (const msg of othersMessages) {
         await showMessage(msg, 3000);
       }
