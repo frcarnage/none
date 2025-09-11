@@ -72,7 +72,7 @@
   <div class="container" id="passwordScreen">
     <h1>Enter Password</h1>
     <input type="password" id="pass" placeholder="Password" autocomplete="off" />
-    <button onclick="checkPassword()">Unlock 💖</button>
+    <button id="unlockBtn">Unlock 💖</button>
     <p id="message"></p>
   </div>
 
@@ -144,28 +144,26 @@
 
     async function checkPassword() {
       const input = document.getElementById("pass").value.trim();
-
       if(input !== PASSWORD){
         messageElem.textContent = "❌ Wrong password!";
         return;
       }
-
       const deviceId = getDeviceId();
       if(localStorage.getItem(ACCESS_KEY) === "true"){
         messageElem.textContent = "Already accessed on this device.";
         return;
       }
-
       const allowed = await canAccess();
       if(!allowed){
         passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (2 Devices Max)</h2>";
         return;
       }
-
       await registerDevice(deviceId);
       localStorage.setItem(ACCESS_KEY, "true");
       window.location.href = "home.html";
     }
+
+    document.getElementById("unlockBtn").addEventListener("click", checkPassword);
 
     window.addEventListener("beforeunload", () => {
       const deviceId = localStorage.getItem(DEVICE_KEY);
