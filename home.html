@@ -4,37 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>💖</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
-      font-family: 'Pacifico', cursive;
-      background: linear-gradient(135deg, #e7608c 0%, #f9ccd3 100%);
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #3a6186 0%, #89253e 100%);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      color: #7b2ff7;
+      color: #ffffff;
       justify-content: center;
       align-items: center;
       text-align: center;
       padding: 2rem;
+      animation: fadeIn 1s ease;
     }
     h1 {
+      font-family: 'Pacifico', cursive;
       font-size: 3rem;
       margin-bottom: 0.5rem;
-      color: #e92e57;
-      text-shadow:
-        0 0 5px #e92e57,
-        0 0 10px #ff3864,
-        0 0 20px #ff3864,
-        0 0 40px #ff3864;
+      color: #fff;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideDown 1.2s ease;
       user-select: none;
     }
     p.description {
       font-size: 1.3rem;
       margin-bottom: 2rem;
-      color: #ff7b9c;
-      font-weight: 500;
+      color: #e0e0e0;
+      font-weight: 400;
+      animation: fadeInUp 1.2s ease;
       user-select: none;
     }
     .button-container {
@@ -43,92 +43,109 @@
       flex-wrap: wrap;
       justify-content: center;
       margin-bottom: 2rem;
+      animation: fadeIn 1.5s ease;
     }
     button {
-      background: #ff4567;
+      background: linear-gradient(135deg, #ff9966, #ff5e62);
       color: white;
       padding: 1rem 2rem;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       border: none;
-      border-radius: 40px;
+      border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(255, 69, 103, 0.6);
-      transition: background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
-      outline-offset: 4px;
       flex: 1 0 200px;
       max-width: 220px;
+      position: relative;
+      overflow: hidden;
     }
-    button:hover, button:focus {
-      background: #ff2a54;
-      box-shadow: 0 12px 30px rgba(255, 42, 84, 0.85);
+    button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    button:active {
+      transform: scale(0.95);
     }
     #messageBox {
       margin-top: 2rem;
-      font-size: 1.4rem;
-      color: #ff2a54;
+      font-size: 1.3rem;
+      color: #ffeaae;
       font-weight: 600;
       min-height: 4em;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
       user-select: none;
       max-width: 90vw;
-      line-height: 1.5;
+      line-height: 1.6;
+    }
+    #messageBox.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     footer {
       margin-top: auto;
       padding: 1rem;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 1rem;
-      color: #d6336c;
+      color: #dcdcdc;
       user-select: none;
-      text-shadow: 0 0 6px #ff527a;
+      text-shadow: 0 0 8px rgba(0,0,0,0.4);
+      animation: fadeIn 2s ease;
     }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    @keyframes slideDown {
+      from {opacity:0; transform: translateY(-30px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+    @keyframes fadeInUp {
+      from {opacity:0; transform: translateY(20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+
     @media (max-width: 600px) {
       h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
       }
       p.description {
         font-size: 1.1rem;
       }
       button {
-        font-size: 1.2rem;
-        padding: 0.85rem 1.8rem;
+        font-size: 1.1rem;
+        padding: 0.85rem 1.5rem;
         max-width: 100%;
       }
       #messageBox {
         font-size: 1.1rem;
       }
-      footer {
-        font-size: 0.9rem;
-      }
     }
   </style>
 </head>
 <body>
-
   <h1>💖 A Message Just For You 💖</h1>
   <p class="description">Select an option below to see messages from me or others!</p>
-
   <div class="button-container">
     <button id="myMessageBtn" aria-live="polite" aria-label="Show my apology message">My Apology 💌</button>
     <button id="othersMessageBtn" aria-live="polite" aria-label="Show what others think">Others' Thoughts ❤️</button>
   </div>
-
   <div id="messageBox" role="alert" aria-atomic="true"></div>
-
   <footer>Made with ❤️ by Vinit 😓</footer>
 
   <script>
     const myMessageBtn = document.getElementById('myMessageBtn');
     const othersMessageBtn = document.getElementById('othersMessageBtn');
     const messageBox = document.getElementById('messageBox');
-
-    // My apology message
+    
     const myMessage = 
       "Sorrryyyy naaaaaaa Anshika sorrrrryyyyyy maaaaffff kardo na, abse nai hoga na aisa, sorry galti hogya, abse jyada pareshaan nai karunga. Photo bhi dunga, VN bhi dunga, call bhi karunga, sab karunga. Sorry naaaaa😭😭😭 ek baar last maaf kardo na, mai bhi to insaan hi hu naaa. Lovee youu 😓💕";
 
-    // Messages from others - one by one, delay 3 sec between
     const othersMessages = [
       "💬 Mark Zuckerberg: MAAF KARDO NA VINIT KO 🙏",
       "💬 Narendra Modi: ANSHIKAA MAAF KARDO VINIT KO, KITNA ACCHA BACCHA HAI! 👍",
@@ -139,27 +156,24 @@
 
     function showMessage(text, duration = 6000) {
       messageBox.textContent = text;
-      messageBox.style.opacity = '1';
+      messageBox.classList.add('show');
       return new Promise(resolve => {
         setTimeout(() => {
-          messageBox.style.opacity = '0';
+          messageBox.classList.remove('show');
           resolve();
         }, duration);
       });
     }
 
     myMessageBtn.addEventListener('click', async () => {
-      // Immediately show apology message
       await showMessage(myMessage, 7000);
     });
 
     othersMessageBtn.addEventListener('click', async () => {
-      // Show each message in sequence with 3 seconds delay
       for (const msg of othersMessages) {
         await showMessage(msg, 3000);
       }
     });
   </script>
-
 </body>
 </html>
