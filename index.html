@@ -13,6 +13,7 @@
       height: 100vh;
       margin: 0;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      user-select: none;
     }
     .container {
       background: #fff;
@@ -22,7 +23,12 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       max-width: 350px;
       width: 100%;
-      animation: fadeIn 1s ease-in-out;
+      animation: fadeIn 1s ease-in-out forwards;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .container.fade-out {
+      opacity: 0;
+      transform: translateY(-30px);
     }
     h1 {
       margin-bottom: 20px;
@@ -52,6 +58,7 @@
       cursor: pointer;
       font-size: 16px;
       transition: background 0.3s;
+      user-select: none;
     }
     button:hover {
       background: #ff4757;
@@ -75,10 +82,15 @@
     <button id="unlockBtn">Unlock 💖</button>
     <p id="message"></p>
   </div>
+
   <script type="module">
+    // Disable right-click context menu globally
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
     import { getDatabase, ref, get, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyC3Vc-ep4Q3FRVBBBdTGNDyOBtBt_Jkwh0",
@@ -90,17 +102,20 @@
       appId: "1:733344434565:web:7c4ba3d136b049fefa1cec",
       measurementId: "G-N783PHKGC9"
     };
-    // Initialize Firebase
+
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
+
     const MAX_DEVICES = 3;
     const PASSWORD = "anshika";
     const ACCESS_KEY = "visitedOnce";
     const DEVICE_KEY = "deviceId";
+
     const messageElem = document.getElementById("message");
     const passwordScreen = document.getElementById("passwordScreen");
-    // Generate or get a unique device ID stored locally
+    const unlockBtn = document.getElementById("unlockBtn");
+
     function getDeviceId() {
       let id = localStorage.getItem(DEVICE_KEY);
       if(!id){
@@ -109,22 +124,20 @@
       }
       return id;
     }
-    // Register this device in the Firebase Realtime DB
+
     async function registerDevice(deviceId) {
       const deviceRef = ref(db, `activeDevices/${deviceId}`);
       await set(deviceRef, { timestamp: Date.now() });
       onDisconnect(deviceRef).remove();
     }
-    // Unregister device on page unload
+
     async function unregisterDevice(deviceId) {
       try {
         const deviceRef = ref(db, `activeDevices/${deviceId}`);
         await remove(deviceRef);
-      } catch (e) {
-        // ignore errors
-      }
+      } catch (e) {}
     }
-    // Check if current device or others can access (max device limit)
+
     async function checkPassword() {
       const input = document.getElementById("pass").value.trim();
       if(input !== PASSWORD){
@@ -137,21 +150,39 @@
       const devices = snapshot.val() || {};
       const deviceIds = Object.keys(devices);
       if(deviceIds.includes(deviceId)) {
-        // This device is already registered, allow access
+        // Already registered device — proceed with animation, welcome, redirect
         localStorage.setItem(ACCESS_KEY, "true");
-        window.location.href = "home.html";
+        playSuccessAnimationAndRedirect();
         return;
       }
       if(deviceIds.length >= MAX_DEVICES) {
         passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (Max 3 Devices)</h2>";
         return;
       }
-      // Register this device if under limit
+      // Register new device, then animate and redirect
       await registerDevice(deviceId);
       localStorage.setItem(ACCESS_KEY, "true");
-      window.location.href = "home.html";
+      playSuccessAnimationAndRedirect();
     }
-    document.getElementById("unlockBtn").addEventListener("click", checkPassword);
+
+    function playSuccessAnimationAndRedirect() {
+      // Fade out screen container with animation
+      passwordScreen.classList.add("fade-out");
+      
+      // Show popup welcome message
+      alert("Welcome Anshikaa 🤍💝💖💗");
+      
+      // Redirect after animation duration (800ms)
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 850);
+    }
+
+    unlockBtn.addEventListener("click", checkPassword);
+
+    // Disable right click is already done globally
+
+    // Unregister device on unload to maintain count
     window.addEventListener("beforeunload", () => {
       const deviceId = localStorage.getItem(DEVICE_KEY);
       if(deviceId){
