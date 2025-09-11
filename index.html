@@ -75,12 +75,10 @@
     <button id="unlockBtn">Unlock 💖</button>
     <p id="message"></p>
   </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
     import { getDatabase, ref, get, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
-
     // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyC3Vc-ep4Q3FRVBBBdTGNDyOBtBt_Jkwh0",
@@ -92,20 +90,16 @@
       appId: "1:733344434565:web:7c4ba3d136b049fefa1cec",
       measurementId: "G-N783PHKGC9"
     };
-
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
-
     const MAX_DEVICES = 3;
     const PASSWORD = "anshika";
     const ACCESS_KEY = "visitedOnce";
     const DEVICE_KEY = "deviceId";
-
     const messageElem = document.getElementById("message");
     const passwordScreen = document.getElementById("passwordScreen");
-
     // Generate or get a unique device ID stored locally
     function getDeviceId() {
       let id = localStorage.getItem(DEVICE_KEY);
@@ -115,23 +109,12 @@
       }
       return id;
     }
-
-    // Check if current device can access (less than MAX_DEVICES connected)
-    async function canAccess() {
-      const devicesRef = ref(db, "activeDevices");
-      const snapshot = await get(devicesRef);
-      const devices = snapshot.val() || {};
-      const count = Object.keys(devices).length;
-      return count < MAX_DEVICES;
-    }
-
     // Register this device in the Firebase Realtime DB
     async function registerDevice(deviceId) {
       const deviceRef = ref(db, `activeDevices/${deviceId}`);
       await set(deviceRef, { timestamp: Date.now() });
       onDisconnect(deviceRef).remove();
     }
-
     // Unregister device on page unload
     async function unregisterDevice(deviceId) {
       try {
@@ -141,7 +124,7 @@
         // ignore errors
       }
     }
-
+    // Check if current device or others can access (max device limit)
     async function checkPassword() {
       const input = document.getElementById("pass").value.trim();
       if(input !== PASSWORD){
@@ -149,22 +132,26 @@
         return;
       }
       const deviceId = getDeviceId();
-      if(localStorage.getItem(ACCESS_KEY) === "true"){
-        messageElem.textContent = "Already accessed on this device.";
+      const devicesRef = ref(db, "activeDevices");
+      const snapshot = await get(devicesRef);
+      const devices = snapshot.val() || {};
+      const deviceIds = Object.keys(devices);
+      if(deviceIds.includes(deviceId)) {
+        // This device is already registered, allow access
+        localStorage.setItem(ACCESS_KEY, "true");
+        window.location.href = "home.html";
         return;
       }
-      const allowed = await canAccess();
-      if(!allowed){
-        passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (2 Devices Max)</h2>";
+      if(deviceIds.length >= MAX_DEVICES) {
+        passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (Max 3 Devices)</h2>";
         return;
       }
+      // Register this device if under limit
       await registerDevice(deviceId);
       localStorage.setItem(ACCESS_KEY, "true");
       window.location.href = "home.html";
     }
-
     document.getElementById("unlockBtn").addEventListener("click", checkPassword);
-
     window.addEventListener("beforeunload", () => {
       const deviceId = localStorage.getItem(DEVICE_KEY);
       if(deviceId){
