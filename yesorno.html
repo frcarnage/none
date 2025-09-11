@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Do You Love Meeee? 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      color: white;
+      overflow: hidden;
+    }
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      user-select: none;
+    }
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      position: relative;
+    }
+    button {
+      font-size: 1.3rem;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .yes-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    .yes-btn:hover {
+      background: #45a049;
+      transform: scale(1.1);
+    }
+    .no-btn {
+      background: #f44336;
+      color: white;
+      position: absolute;
+    }
+    #msg {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      min-height: 2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Do you loveeeeeeeee meeeee? 💖</h1>
+
+  <div class="buttons">
+    <button class="yes-btn" id="yesBtn">Yes</button>
+    <button class="no-btn" id="noBtn">No</button>
+  </div>
+
+  <div id="msg"></div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const msgBox = document.getElementById("msg");
+    let noClicks = 0;
+
+    yesBtn.addEventListener("click", () => {
+      window.location.href = "home.html"; // redirect on Yes
+    });
+
+    noBtn.addEventListener("click", (e) => {
+      noClicks++;
+      if (noClicks < 4) {
+        // Move No button randomly
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 100);
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+
+        // Messages for each no attempt
+        if (noClicks === 1) msgBox.textContent = "😢 You can’t click Nooooo!";
+        if (noClicks === 2) msgBox.textContent = "🙏 Please don’t click Nooo...";
+        if (noClicks === 3) msgBox.textContent = "💔 Last warning... don’t press No!";
+      } else {
+        // 4th time → turn into Yes
+        noBtn.textContent = "Yes";
+        noBtn.classList.remove("no-btn");
+        noBtn.classList.add("yes-btn");
+        msgBox.textContent = "😏 Now you have only Yes options!";
+        noBtn.addEventListener("click", () => {
+          window.location.href = "home.html";
+        });
+      }
+    });
+  </script>
+</body>
+</html>
