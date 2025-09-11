@@ -29,12 +29,18 @@
       margin: 0;
       font-size: 2.75rem;
       color: #e92e57;
+      text-shadow:
+        0 0 5px #e92e57,
+        0 0 10px #ff3864,
+        0 0 20px #ff3864,
+        0 0 40px #ff3864;
     }
     header p {
       font-size: 1.3rem;
       margin-top: 0.25rem;
       color: #ff7b9c;
       font-weight: 500;
+      user-select: none;
     }
     #scene {
       width: 90vw;
@@ -42,16 +48,16 @@
       height: 65vh;
       max-height: 600px;
       border-radius: 25px;
-      box-shadow: 0 10px 30px rgba(231, 27, 64, 0.3);
+      box-shadow: 0 10px 35px rgba(231, 27, 64, 0.5);
       background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       position: relative;
       margin: 1rem auto;
       cursor: pointer;
       transition: box-shadow 0.3s ease;
     }
     #scene:hover {
-      box-shadow: 0 15px 45px rgba(231, 27, 64, 0.5);
+      box-shadow: 0 15px 50px rgba(231, 27, 64, 0.7);
     }
     #messageBox {
       position: fixed;
@@ -60,17 +66,19 @@
       transform: translateX(-50%);
       background: #ff4d6d;
       color: white;
-      padding: 0.85rem 1.6rem;
+      padding: 0.85rem 1.8rem;
       border-radius: 45px;
       font-size: 1.1rem;
       font-weight: 700;
-      text-shadow: 0 0 4px #720027;
+      text-shadow: 0 0 8px #720027;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
-      z-index: 10;
+      z-index: 1000;
       user-select: none;
-      box-shadow: 0 0 15px #ff4d6d;
+      box-shadow: 0 0 20px #ff4d6d;
+      max-width: 90vw;
+      text-align: center;
     }
     footer {
       padding: 1rem;
@@ -98,6 +106,10 @@
       footer {
         font-size: 0.9rem;
       }
+      #messageBox {
+        font-size: 1rem;
+        padding: 0.7rem 1.2rem;
+      }
     }
     @media (max-height: 500px) {
       #scene {
@@ -110,7 +122,7 @@
   <!-- Header -->
   <header>
     <h1>💖 A Message Just For You 💖</h1>
-    <p>Tap or click a floating heart to see my message.</p>
+    <p>Tap or click a floating heart to see a loving message.</p>
   </header>
 
   <!-- 3D Scene Container -->
@@ -121,7 +133,7 @@
 
   <!-- Footer -->
   <footer>
-    <p>Made with ❤️ by  Vinit 😓</p>
+    <p>Made with ❤️ by Vinit 😓</p>
   </footer>
 
   <!-- Three.js CDN -->
@@ -142,10 +154,10 @@
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setClearColor(0x000000, 0); // transparent bg
+      renderer.setClearColor(0x000000, 0); // transparent background
       container.appendChild(renderer.domElement);
 
-      // Handle resize
+      // Resize handling
       function onWindowResize() {
         const width = container.clientWidth;
         const height = container.clientHeight;
@@ -172,7 +184,7 @@
         const geometry = new THREE.ShapeGeometry(heartShape);
         const material = new THREE.MeshPhongMaterial({
           color: 0xff4567,
-          shininess: 120,
+          shininess: 140,
           specular: 0xff81ac
         });
         return new THREE.Mesh(geometry, material);
@@ -181,31 +193,31 @@
       // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       scene.add(ambientLight);
-      const directionalLight = new THREE.DirectionalLight(0xff6688, 0.9);
+
+      const directionalLight = new THREE.DirectionalLight(0xff6688, 1);
       directionalLight.position.set(5, 10, 7);
       scene.add(directionalLight);
 
-      // Hearts array
+      // Create hearts
       const hearts = [];
-      const heartCount = 8;
+      const heartCount = 9;
 
-      // Raycaster for interaction
+      // Raycaster for detecting clicks on hearts
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
 
-      // Create hearts with extra properties for heartbeat and floating
       for(let i = 0; i < heartCount; i++) {
         const heart = createHeartMesh();
         heart.position.x = (Math.random() - 0.5) * 8;
         heart.position.y = (Math.random() - 0.5) * 6;
-        heart.position.z = (Math.random() - 0.5) * 4;
+        heart.position.z = (Math.random() - 0.5) * 5;
         const baseScale = 0.75 + Math.random() * 0.7;
         heart.scale.set(baseScale, baseScale, baseScale);
         scene.add(heart);
         hearts.push({
           mesh: heart,
           baseScale,
-          speed: 0.0012 + Math.random() * 0.0016,
+          speed: 0.001 + Math.random() * 0.002,
           direction: Math.random() > 0.5 ? 1 : -1,
           floatAmplitude: 0.06 + Math.random() * 0.06,
           floatOffset: Math.random() * Math.PI * 2,
@@ -215,47 +227,44 @@
 
       const clock = new THREE.Clock();
 
-      // Show message box with fade
+      // Show message with fade effect
       function showMessage(text) {
         messageBox.textContent = text;
         messageBox.style.opacity = '1';
         setTimeout(() => {
           messageBox.style.opacity = '0';
-        }, 3000);
+        }, 4000);
       }
 
       // Animation loop
       function animate() {
         requestAnimationFrame(animate);
         const elapsed = clock.getElapsedTime();
-
-        hearts.forEach(({ mesh, baseScale, speed, direction, floatAmplitude, floatOffset, pulsePhase }, i) => {
-          // Floating up/down
+        hearts.forEach(({ mesh, baseScale, speed, direction, floatAmplitude, floatOffset, pulsePhase }) => {
           mesh.position.y += Math.sin(elapsed * 2 + floatOffset) * 0.002;
-
-          // Pulse scale (heartbeat)
           const scalePulse = baseScale + Math.sin(elapsed * 5 + pulsePhase) * 0.1;
           mesh.scale.set(scalePulse, scalePulse, scalePulse);
-
-          // Rotation for floating effect
           mesh.rotation.z += speed * direction;
-          mesh.rotation.x += speed * 0.5 * direction;
-          mesh.rotation.y += speed * 0.7 * direction;
+          mesh.rotation.x += speed * direction * 0.5;
+          mesh.rotation.y += speed * direction * 0.7;
         });
-
         renderer.render(scene, camera);
       }
+
       animate();
 
-      // Detect click and raycast
+      // Detect clicks on hearts using raycasting
       container.addEventListener('click', event => {
         const rect = container.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
         const intersects = raycaster.intersectObjects(hearts.map(h => h.mesh));
-        if(intersects.length > 0){
+        if(intersects.length > 0) {
           showMessage('💌 The message is: Always keep love in your heart! 💖');
+        } else {
+          // Optional: hide message if clicked outside
+          messageBox.style.opacity = '0';
         }
       });
     })();
