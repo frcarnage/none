@@ -18,6 +18,7 @@
       align-items: center;
       text-align: center;
       padding: 2rem;
+      overflow-x: hidden;
     }
     h1 {
       font-family: 'Pacifico', cursive;
@@ -44,20 +45,21 @@
       font-size: 3rem;
       cursor: pointer;
       user-select: none;
-      animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+      animation: float 3s ease-in-out infinite;
       display: inline-block;
       transition: transform 0.3s ease;
+      position: relative;
     }
-    /* Slight delay for each heart animation to make them look unique */
-    .heart:nth-child(1) { animation-delay: 0s, 0s; }
-    .heart:nth-child(2) { animation-delay: 0.5s, 1s; }
-    .heart:nth-child(3) { animation-delay: 1s, 0.5s; }
-    .heart:nth-child(4) { animation-delay: 1.5s, 1.5s; }
-    
     .heart:hover {
       transform: scale(1.4) rotate(10deg);
     }
 
+    /* Different glowing colors for each heart */
+    .heart:nth-child(1) { animation: float 3s ease-in-out infinite, glowPink 2s ease-in-out infinite; }
+    .heart:nth-child(2) { animation: float 3s ease-in-out infinite, glowRed 2s ease-in-out infinite; }
+    .heart:nth-child(3) { animation: float 3s ease-in-out infinite, glowPurple 2s ease-in-out infinite; }
+    .heart:nth-child(4) { animation: float 3s ease-in-out infinite, glowCyan 2s ease-in-out infinite; }
+    
     /* Larger others-heart */
     .others-heart {
       font-size: 4rem;
@@ -65,7 +67,9 @@
       display: inline-block;
       cursor: pointer;
       animation: pulse 2s infinite;
+      position: relative;
     }
+
     #messageBox {
       margin-top: 2rem;
       font-size: 1.3rem;
@@ -82,11 +86,21 @@
       opacity: 1;
       transform: translateY(0);
     }
+
     footer {
       margin-top: auto;
       padding: 1rem;
       font-size: 0.9rem;
       color: #dcdcdc;
+    }
+
+    /* Particle hearts & bubbles */
+    .particle {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 1;
+      animation: burst 1s ease forwards;
+      pointer-events: none;
     }
 
     /* Animations */
@@ -108,10 +122,31 @@
       50% { transform: translateY(-10px); }
       100% { transform: translateY(0); }
     }
-    @keyframes glow {
+    @keyframes burst {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) scale(0.3); opacity: 0; }
+    }
+
+    /* Glow color variants */
+    @keyframes glowPink {
       0% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
       50% { text-shadow: 0 0 15px #ff69b4, 0 0 25px #fff; }
       100% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
+    }
+    @keyframes glowRed {
+      0% { text-shadow: 0 0 5px #ff7f7f, 0 0 10px #fff; }
+      50% { text-shadow: 0 0 15px #ff2e2e, 0 0 25px #fff; }
+      100% { text-shadow: 0 0 5px #ff7f7f, 0 0 10px #fff; }
+    }
+    @keyframes glowPurple {
+      0% { text-shadow: 0 0 5px #b19cd9, 0 0 10px #fff; }
+      50% { text-shadow: 0 0 15px #8a2be2, 0 0 25px #fff; }
+      100% { text-shadow: 0 0 5px #b19cd9, 0 0 10px #fff; }
+    }
+    @keyframes glowCyan {
+      0% { text-shadow: 0 0 5px #7fffd4, 0 0 10px #fff; }
+      50% { text-shadow: 0 0 15px #00ffff, 0 0 25px #fff; }
+      100% { text-shadow: 0 0 5px #7fffd4, 0 0 10px #fff; }
     }
 
     @media (max-width: 600px) {
@@ -142,15 +177,21 @@
   <div id="messageBox"></div>
   <footer>Made with ❤️ by Vinit 😓</footer>
 
+  <!-- Audio elements for sound effects -->
+  <audio id="popHeart" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAAD///8AAAA="></audio>
+  <audio id="popBubble" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRQAAAD/////AAAA"></audio>
+
   <script>
     const messageBox = document.getElementById('messageBox');
     const hearts = document.querySelectorAll('.heart');
     const othersHeart = document.getElementById('othersHeart');
+    const heartSound = document.getElementById('popHeart');
+    const bubbleSound = document.getElementById('popBubble');
 
     // Four personal messages (fill these yourself)
     const myMessages = [
-      "", // Message 1
-      "", // Message 2
+      "", sorry naa
+      "", a
       "", // Message 3
       ""  // Message 4
     ];
@@ -175,17 +216,63 @@
       });
     }
 
-    // Click on any heart => show its own message
+    // Burst hearts for click on your hearts
+    function burstHearts(element) {
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement("span");
+        particle.className = "particle";
+        particle.innerText = "💖";
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 60 + Math.random() * 40;
+        const x = Math.cos(angle) * distance + "px";
+        const y = Math.sin(angle) * distance + "px";
+
+        particle.style.setProperty("--x", x);
+        particle.style.setProperty("--y", y);
+
+        element.appendChild(particle);
+        particle.addEventListener("animationend", () => particle.remove());
+      }
+      heartSound.currentTime = 0;
+      heartSound.play();
+    }
+
+    // Burst speech bubbles for others heart
+    function burstBubbles(element) {
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement("span");
+        particle.className = "particle";
+        particle.innerText = "💬";
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 70 + Math.random() * 50;
+        const x = Math.cos(angle) * distance + "px";
+        const y = Math.sin(angle) * distance + "px";
+
+        particle.style.setProperty("--x", x);
+        particle.style.setProperty("--y", y);
+
+        element.appendChild(particle);
+        particle.addEventListener("animationend", () => particle.remove());
+      }
+      bubbleSound.currentTime = 0;
+      bubbleSound.play();
+    }
+
+    // Click on any heart => show its own message + burst + sound
     hearts.forEach(heart => {
       heart.addEventListener('click', async (e) => {
+        burstHearts(e.target);
         const index = e.target.getAttribute('data-index');
         const msg = myMessages[index] || "💖 (Your message here)";
         await showMessage(msg, 6000);
       });
     });
 
-    // Big heart cycles others’ messages
-    othersHeart.addEventListener('click', async () => {
+    // Big heart cycles others’ messages + bubbles + sound
+    othersHeart.addEventListener('click', async (e) => {
+      burstBubbles(e.target);
       for (const msg of othersMessages) {
         await showMessage(msg, 3000);
       }
