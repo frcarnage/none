@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>💖</title>
+  <title>💖 Heart Messages 💖</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -31,7 +31,7 @@
     p.description {
       font-size: 1.2rem;
       margin-bottom: 2rem;
-      color: #e0e0e0;
+      color: #f1f1f1;
       animation: fadeIn 1.5s ease;
     }
     .hearts-container {
@@ -47,20 +47,29 @@
       user-select: none;
       animation: float 3s ease-in-out infinite;
       display: inline-block;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.4s ease, color 0.4s ease;
       position: relative;
     }
     .heart:hover {
-      transform: scale(1.4) rotate(10deg);
+      transform: scale(1.5) rotate(15deg);
     }
 
-    /* Different glowing colors for each heart */
-    .heart:nth-child(1) { animation: float 3s ease-in-out infinite, glowPink 2s ease-in-out infinite; }
-    .heart:nth-child(2) { animation: float 3s ease-in-out infinite, glowRed 2s ease-in-out infinite; }
-    .heart:nth-child(3) { animation: float 3s ease-in-out infinite, glowPurple 2s ease-in-out infinite; }
-    .heart:nth-child(4) { animation: float 3s ease-in-out infinite, glowCyan 2s ease-in-out infinite; }
-    
-    /* Larger others-heart */
+    /* glow colors */
+    .heart:nth-child(1) { animation: float 3s infinite, glowPink 2s infinite; }
+    .heart:nth-child(2) { animation: float 3s infinite, glowRed 2s infinite; }
+    .heart:nth-child(3) { animation: float 3s infinite, glowPurple 2s infinite; }
+    .heart:nth-child(4) { animation: float 3s infinite, glowCyan 2s infinite; }
+
+    /* unlocked style */
+    .heart.unlocked {
+      opacity: 0.5;
+      color: #ffd1dc;
+      transform: scale(1);
+      cursor: default;
+      animation: none;
+      text-shadow: none !important;
+    }
+
     .others-heart {
       font-size: 4rem;
       margin-top: 1rem;
@@ -81,6 +90,10 @@
       transition: opacity 0.6s ease, transform 0.6s ease;
       max-width: 90vw;
       line-height: 1.6;
+      padding: 1rem 1.3rem;
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
     }
     #messageBox.show {
       opacity: 1;
@@ -94,16 +107,14 @@
       color: #dcdcdc;
     }
 
-    /* Particle hearts & bubbles */
     .particle {
       position: absolute;
       font-size: 1.2rem;
       opacity: 1;
-      animation: burst 1s ease forwards;
+      animation: burst 1s forwards;
       pointer-events: none;
     }
 
-    /* Animations */
     @keyframes pulse {
       0% {transform: scale(1);}
       50% {transform: scale(1.2);}
@@ -127,26 +138,21 @@
       100% { transform: translate(var(--x), var(--y)) scale(0.3); opacity: 0; }
     }
 
-    /* Glow color variants */
     @keyframes glowPink {
-      0% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
-      50% { text-shadow: 0 0 15px #ff69b4, 0 0 25px #fff; }
-      100% { text-shadow: 0 0 5px #ffb6c1, 0 0 10px #fff; }
+      0%,100% { text-shadow: 0 0 8px #ffb6c1, 0 0 12px #fff; }
+      50% { text-shadow: 0 0 20px #ff69b4, 0 0 30px #fff; }
     }
     @keyframes glowRed {
-      0% { text-shadow: 0 0 5px #ff7f7f, 0 0 10px #fff; }
-      50% { text-shadow: 0 0 15px #ff2e2e, 0 0 25px #fff; }
-      100% { text-shadow: 0 0 5px #ff7f7f, 0 0 10px #fff; }
+      0%,100% { text-shadow: 0 0 8px #ff7f7f, 0 0 12px #fff; }
+      50% { text-shadow: 0 0 20px #ff2e2e, 0 0 30px #fff; }
     }
     @keyframes glowPurple {
-      0% { text-shadow: 0 0 5px #b19cd9, 0 0 10px #fff; }
-      50% { text-shadow: 0 0 15px #8a2be2, 0 0 25px #fff; }
-      100% { text-shadow: 0 0 5px #b19cd9, 0 0 10px #fff; }
+      0%,100% { text-shadow: 0 0 8px #b19cd9, 0 0 12px #fff; }
+      50% { text-shadow: 0 0 20px #8a2be2, 0 0 30px #fff; }
     }
     @keyframes glowCyan {
-      0% { text-shadow: 0 0 5px #7fffd4, 0 0 10px #fff; }
-      50% { text-shadow: 0 0 15px #00ffff, 0 0 25px #fff; }
-      100% { text-shadow: 0 0 5px #7fffd4, 0 0 10px #fff; }
+      0%,100% { text-shadow: 0 0 8px #7fffd4, 0 0 12px #fff; }
+      50% { text-shadow: 0 0 20px #00ffff, 0 0 30px #fff; }
     }
 
     @media (max-width: 600px) {
@@ -159,9 +165,8 @@
 </head>
 <body>
   <h1>💖 A Message Just For You 💖</h1>
-  <p class="description">Click on the hearts below to reveal messages!</p>
+  <p class="description">Click on the hearts below to reveal messages! (Each heart unlocks once)</p>
 
-  <!-- Four hearts for your own messages -->
   <div class="hearts-container">
     <span class="heart" data-index="0">💖</span>
     <span class="heart" data-index="1">💖</span>
@@ -169,7 +174,6 @@
     <span class="heart" data-index="3">💖</span>
   </div>
 
-  <!-- One bigger heart for "others’ thoughts" -->
   <div>
     <span class="others-heart" id="othersHeart" title="What others say about you">❤️</span>
   </div>
@@ -177,7 +181,6 @@
   <div id="messageBox"></div>
   <footer>Made with ❤️ by Vinit 😓</footer>
 
-  <!-- Audio elements for sound effects -->
   <audio id="popHeart" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAAD///8AAAA="></audio>
   <audio id="popBubble" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRQAAAD/////AAAA"></audio>
 
@@ -188,15 +191,13 @@
     const heartSound = document.getElementById('popHeart');
     const bubbleSound = document.getElementById('popBubble');
 
-    // Four personal messages (fill these yourself)
     const myMessages = [
-      "", sorry naa anshikaaa maaf kardo naaaa ek baar bss mai bhi to insaan hi hu naaa baccha smjh ke hi abse nai hoga na pakkaaaaa na pls
-      "", a
-      "", // Message 3
-      ""  // Message 4
+      "Sorry naa Anshikaaa... maaf kardo na ek baar. Mai bhi insaan hi hu, baccha samajh ke maaf kardo... pakkaa ab galti nahi hogi 🙏",
+      " .",
+      " ..",
+      "."
     ];
 
-    // Others' messages
     const othersMessages = [
       "💬 Mark Zuckerberg: MAAF KARDO NA VINIT KO 🙏",
       "💬 Narendra Modi: ANSHIKAA MAAF KARDO VINIT KO, KITNA ACCHA BACCHA HAI! 👍",
@@ -216,21 +217,17 @@
       });
     }
 
-    // Burst hearts for click on your hearts
     function burstHearts(element) {
       for (let i = 0; i < 8; i++) {
         const particle = document.createElement("span");
         particle.className = "particle";
         particle.innerText = "💖";
-
         const angle = Math.random() * 2 * Math.PI;
         const distance = 60 + Math.random() * 40;
         const x = Math.cos(angle) * distance + "px";
         const y = Math.sin(angle) * distance + "px";
-
         particle.style.setProperty("--x", x);
         particle.style.setProperty("--y", y);
-
         element.appendChild(particle);
         particle.addEventListener("animationend", () => particle.remove());
       }
@@ -238,21 +235,17 @@
       heartSound.play();
     }
 
-    // Burst speech bubbles for others heart
     function burstBubbles(element) {
       for (let i = 0; i < 8; i++) {
         const particle = document.createElement("span");
         particle.className = "particle";
         particle.innerText = "💬";
-
         const angle = Math.random() * 2 * Math.PI;
         const distance = 70 + Math.random() * 50;
         const x = Math.cos(angle) * distance + "px";
         const y = Math.sin(angle) * distance + "px";
-
         particle.style.setProperty("--x", x);
         particle.style.setProperty("--y", y);
-
         element.appendChild(particle);
         particle.addEventListener("animationend", () => particle.remove());
       }
@@ -260,17 +253,20 @@
       bubbleSound.play();
     }
 
-    // Click on any heart => show its own message + burst + sound
     hearts.forEach(heart => {
       heart.addEventListener('click', async (e) => {
-        burstHearts(e.target);
         const index = e.target.getAttribute('data-index');
-        const msg = myMessages[index] || "💖 (Your message here)";
+        if (heart.classList.contains('unlocked')) {
+          // already clicked: do nothing
+          return;
+        }
+        burstHearts(e.target);
+        const msg = myMessages[index] || "💖 (Message coming soon...)";
         await showMessage(msg, 6000);
+        heart.classList.add('unlocked'); // mark unlocked permanently
       });
     });
 
-    // Big heart cycles others’ messages + bubbles + sound
     othersHeart.addEventListener('click', async (e) => {
       burstBubbles(e.target);
       for (const msg of othersMessages) {
