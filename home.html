@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>💖 My Apology</title>
+  <title>💖</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -30,12 +30,19 @@
         0 0 40px #ff3864;
       user-select: none;
     }
-    p {
+    p.description {
       font-size: 1.3rem;
       margin-bottom: 2rem;
       color: #ff7b9c;
       font-weight: 500;
       user-select: none;
+    }
+    .button-container {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
     }
     button {
       background: #ff4567;
@@ -49,6 +56,8 @@
       transition: background 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
       outline-offset: 4px;
+      flex: 1 0 200px;
+      max-width: 220px;
     }
     button:hover, button:focus {
       background: #ff2a54;
@@ -59,10 +68,12 @@
       font-size: 1.4rem;
       color: #ff2a54;
       font-weight: 600;
-      min-height: 2.5em;
+      min-height: 4em;
       opacity: 0;
       transition: opacity 0.5s ease;
       user-select: none;
+      max-width: 90vw;
+      line-height: 1.5;
     }
     footer {
       margin-top: auto;
@@ -77,12 +88,13 @@
       h1 {
         font-size: 2rem;
       }
-      p {
+      p.description {
         font-size: 1.1rem;
       }
       button {
         font-size: 1.2rem;
         padding: 0.85rem 1.8rem;
+        max-width: 100%;
       }
       #messageBox {
         font-size: 1.1rem;
@@ -94,26 +106,60 @@
   </style>
 </head>
 <body>
+
   <h1>💖 A Message Just For You 💖</h1>
-  <p>Click the button below to see my special message!</p>
-  <button id="showMsgBtn" aria-live="polite" aria-label="Show my message">View Message 💌</button>
+  <p class="description">Select an option below to see messages from me or others!</p>
+
+  <div class="button-container">
+    <button id="myMessageBtn" aria-live="polite" aria-label="Show my apology message">My Apology 💌</button>
+    <button id="othersMessageBtn" aria-live="polite" aria-label="Show what others think">Others' Thoughts ❤️</button>
+  </div>
+
   <div id="messageBox" role="alert" aria-atomic="true"></div>
+
   <footer>Made with ❤️ by Vinit 😓</footer>
 
   <script>
-    const button = document.getElementById('showMsgBtn');
+    const myMessageBtn = document.getElementById('myMessageBtn');
+    const othersMessageBtn = document.getElementById('othersMessageBtn');
     const messageBox = document.getElementById('messageBox');
 
-    button.addEventListener('click', () => {
-      const message = 
-        "✨ Here's my loving message: Always keep love in your heart and share it generously! 💖";
-      messageBox.textContent = message;
+    // My apology message
+    const myMessage = 
+      "Sorrryyyy naaaaaaa Anshika sorrrrryyyyyy maaaaffff kardo na, abse nai hoga na aisa, sorry galti hogya, abse jyada pareshaan nai karunga. Photo bhi dunga, VN bhi dunga, call bhi karunga, sab karunga. Sorry naaaaa😭😭😭 ek baar last maaf kardo na, mai bhi to insaan hi hu naaa. Lovee youu 😓💕";
+
+    // Messages from others - one by one, delay 3 sec between
+    const othersMessages = [
+      "💬 Mark Zuckerberg: MAAF KARDO NA VINIT KO 🙏",
+      "💬 Narendra Modi: ANSHIKAA MAAF KARDO VINIT KO, KITNA ACCHA BACCHA HAI! 👍",
+      "💬 Elon Musk: Vinit ke taraf se sorryyyyy!",
+      "💬 Oprah Winfrey: The ability to apologize shows strength and growth.",
+      "💬 Malala Yousafzai: Forgiveness is the key to peace in our hearts."
+    ];
+
+    function showMessage(text, duration = 6000) {
+      messageBox.textContent = text;
       messageBox.style.opacity = '1';
-      // Hide message after 6 seconds
-      setTimeout(() => {
-        messageBox.style.opacity = '0';
-      }, 6000);
+      return new Promise(resolve => {
+        setTimeout(() => {
+          messageBox.style.opacity = '0';
+          resolve();
+        }, duration);
+      });
+    }
+
+    myMessageBtn.addEventListener('click', async () => {
+      // Immediately show apology message
+      await showMessage(myMessage, 7000);
+    });
+
+    othersMessageBtn.addEventListener('click', async () => {
+      // Show each message in sequence with 3 seconds delay
+      for (const msg of othersMessages) {
+        await showMessage(msg, 3000);
+      }
     });
   </script>
+
 </body>
 </html>
