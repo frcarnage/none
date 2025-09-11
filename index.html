@@ -3,38 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💖 Just for You</title>
-  <link rel="stylesheet" href="style.css">
+  <title>💖For Youuuuu</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 350px;
+      width: 100%;
+      animation: fadeIn 1s ease-in-out;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #ff6b6b;
+      font-size: 22px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border 0.3s;
+    }
+    input:focus {
+      border-color: #ff6b6b;
+    }
+    button {
+      background: #ff6b6b;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #ff4757;
+    }
+    #message {
+      margin-top: 15px;
+      color: #777;
+      font-size: 14px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <div id="passwordScreen">
-    <h1>Enter Password to Open</h1>
+  <div class="container" id="passwordScreen">
+    <h1>Enter Password</h1>
     <input type="password" id="pass" placeholder="Password">
-    <button onclick="checkPassword()">Enter</button>
+    <button onclick="checkPassword()">Unlock 💖</button>
+    <p id="message"></p>
   </div>
-
   <script>
-    const password = "love123"; // Change this to your password
-    const accessKey = "visitedOnce";
+    const password = "love123"; 
+    const accessKey = "visitedOnce"; 
 
-    // Check if already accessed
+    // Mock "server" counter using localStorage for demo (replace with real DB)
+    const deviceCountKey = "deviceCount"; 
+    let deviceCount = localStorage.getItem(deviceCountKey) || 0;
+
     if(localStorage.getItem(accessKey)){
-      alert("This site has already been accessed. Access denied.");
-      document.getElementById("passwordScreen").innerHTML = "<h2>Access Denied</h2>";
+      document.getElementById("message").innerText = "Already accessed on this device.";
     }
 
     function checkPassword() {
       const input = document.getElementById("pass").value;
       if(input === password){
         if(!localStorage.getItem(accessKey)){
-          localStorage.setItem(accessKey, "true");
-          window.location.href = "home.html";
+          if(deviceCount < 2){
+            localStorage.setItem(accessKey, "true");
+            localStorage.setItem(deviceCountKey, Number(deviceCount) + 1);
+            window.location.href = "home.html";
+          } else {
+            document.getElementById("passwordScreen").innerHTML = "<h2>🚫 Access Limit Exceeded (2 Devices Max)</h2>";
+          }
         } else {
-          alert("This site has already been accessed. Access denied.");
-          document.getElementById("passwordScreen").innerHTML = "<h2>Access Denied</h2>";
+          document.getElementById("message").innerText = "Already unlocked on this device.";
         }
       } else {
-        alert("Wrong password!");
+        document.getElementById("message").innerText = "❌ Wrong password!";
       }
     }
   </script>
