@@ -19,29 +19,35 @@
       color: white;
       overflow: hidden;
     }
+
     h1 {
       font-family: 'Pacifico', cursive;
-      font-size: 2.3rem;
+      font-size: 2.5rem;
       margin-bottom: 2rem;
       text-shadow: 0 4px 12px rgba(0,0,0,0.4);
       user-select: none;
       padding: 0 1rem;
+      animation: fadeIn 1.2s ease forwards;
     }
+
     .buttons {
       display: flex;
       gap: 1rem;
       position: relative;
-      min-height: 60px;
+      min-height: 70px;
     }
+
     button {
       font-size: 1.2rem;
-      padding: 0.7rem 1.4rem;
+      padding: 0.8rem 1.6rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       transition: transform 0.3s, background 0.3s;
-      z-index: 5;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+
     .yes-btn {
       background: #4CAF50;
       color: white;
@@ -50,29 +56,63 @@
       background: #45a049;
       transform: scale(1.1);
     }
+
     .no-btn {
       background: #f44336;
       color: white;
       position: absolute;
-      left: 120px;
+      transition: left 0.4s ease, top 0.4s ease, transform 0.3s;
     }
+
     #msg {
       margin-top: 2rem;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      min-height: 2.2em;
+      min-height: 2.5em;
       padding: 0 1rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #msg.show { opacity: 1; }
+
+    /* Floating background hearts */
+    .heart-bg {
+      position: absolute;
+      color: rgba(255,255,255,0.2);
+      font-size: 2rem;
+      animation: float 6s ease-in-out infinite;
+      user-select: none;
+    }
+    .heart-bg:nth-child(1){ top:10%; left:15%; animation-delay:0s;}
+    .heart-bg:nth-child(2){ top:70%; left:25%; animation-delay:1s;}
+    .heart-bg:nth-child(3){ top:40%; left:80%; animation-delay:2s;}
+    .heart-bg:nth-child(4){ top:20%; left:60%; animation-delay:3s;}
+
+    @keyframes fadeIn {
+      from {opacity:0; transform:translateY(-20px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+    @keyframes float {
+      0% { transform: translateY(0);}
+      50% { transform: translateY(-15px);}
+      100% { transform: translateY(0);}
     }
 
     /* Responsive tweaks */
     @media (max-width: 600px) {
-      h1 { font-size: 1.6rem; }
+      h1 { font-size: 1.8rem; }
       button { font-size: 1rem; padding: 0.6rem 1.2rem; }
       #msg { font-size: 1rem; }
     }
   </style>
 </head>
 <body>
+  <!-- Floating hearts background -->
+  <span class="heart-bg">💖</span>
+  <span class="heart-bg">💞</span>
+  <span class="heart-bg">💕</span>
+  <span class="heart-bg">❤️</span>
+  
   <h1>Do you loveeeeeeeee meeeee? 💖</h1>
 
   <div class="buttons">
@@ -92,27 +132,29 @@
       window.location.href = "home.html"; // redirect on Yes
     });
 
-    noBtn.addEventListener("click", (e) => {
+    noBtn.addEventListener("click", () => {
       noClicks++;
       if (noClicks < 4) {
-        // Calculate random safe position so button stays inside viewport
+        // Safe random position within viewport
         const btnWidth = noBtn.offsetWidth;
         const btnHeight = noBtn.offsetHeight;
-        const maxX = window.innerWidth - btnWidth - 20;
-        const maxY = window.innerHeight - btnHeight - 20;
-
+        const maxX = window.innerWidth - btnWidth - 30;
+        const maxY = window.innerHeight - btnHeight - 30;
         const x = Math.random() * maxX;
         const y = Math.random() * maxY;
 
         noBtn.style.left = x + "px";
         noBtn.style.top = y + "px";
+        noBtn.style.transform = "scale(1.2)";
+        setTimeout(()=> noBtn.style.transform="scale(1)",200);
 
         // Messages for each attempt
         if (noClicks === 1) msgBox.textContent = "😢 You can’t click Nooooo!";
         if (noClicks === 2) msgBox.textContent = "🙏 Please don’t click Nooo...";
         if (noClicks === 3) msgBox.textContent = "💔 Last warning... don’t press No!";
+        msgBox.classList.add("show");
       } else {
-        // 4th time → turn into Yes
+        // Convert to Yes after 4th try
         noBtn.textContent = "Yes";
         noBtn.classList.remove("no-btn");
         noBtn.classList.add("yes-btn");
@@ -123,7 +165,7 @@
       }
     });
 
-    // Ensure button starts centered relative to Yes on load (for mobile)
+    // Place No button initially near Yes
     window.addEventListener("load", () => {
       const rect = yesBtn.getBoundingClientRect();
       noBtn.style.left = rect.right + 20 + "px";
