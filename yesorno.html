@@ -22,7 +22,7 @@
 
     h1 {
       font-family: 'Pacifico', cursive;
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       margin-bottom: 2rem;
       text-shadow: 0 4px 12px rgba(0,0,0,0.4);
       user-select: none;
@@ -33,17 +33,17 @@
     .buttons {
       display: flex;
       gap: 1rem;
+      justify-content: center;
       position: relative;
-      min-height: 70px;
     }
 
     button {
       font-size: 1.2rem;
-      padding: 0.8rem 1.6rem;
+      padding: 0.8rem 1.5rem;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.3s, background 0.3s;
+      transition: transform 0.3s, background 0.3s, margin 0.3s;
       z-index: 10;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
@@ -60,15 +60,13 @@
     .no-btn {
       background: #f44336;
       color: white;
-      position: absolute;
-      transition: left 0.4s ease, top 0.4s ease, transform 0.3s;
     }
 
     #msg {
       margin-top: 2rem;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      min-height: 2.5em;
+      min-height: 2.2em;
       padding: 0 1rem;
       opacity: 0;
       transition: opacity 0.5s ease;
@@ -98,11 +96,10 @@
       100% { transform: translateY(0);}
     }
 
-    /* Responsive tweaks */
     @media (max-width: 600px) {
-      h1 { font-size: 1.8rem; }
+      h1 { font-size: 1.6rem; }
       button { font-size: 1rem; padding: 0.6rem 1.2rem; }
-      #msg { font-size: 1rem; }
+      #msg { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -115,7 +112,7 @@
   
   <h1>Do you loveeeeeeeee meeeee? 💖</h1>
 
-  <div class="buttons">
+  <div class="buttons" id="btnContainer">
     <button class="yes-btn" id="yesBtn">Yes</button>
     <button class="no-btn" id="noBtn">No</button>
   </div>
@@ -126,50 +123,32 @@
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
     const msgBox = document.getElementById("msg");
+    const btnContainer = document.getElementById("btnContainer");
     let noClicks = 0;
 
     yesBtn.addEventListener("click", () => {
-      window.location.href = "home.html"; // redirect on Yes
+      window.location.href = "home.html"; 
     });
 
     noBtn.addEventListener("click", () => {
       noClicks++;
-      if (noClicks < 4) {
-        // Safe random position within viewport
-        const btnWidth = noBtn.offsetWidth;
-        const btnHeight = noBtn.offsetHeight;
-        const maxX = window.innerWidth - btnWidth - 30;
-        const maxY = window.innerHeight - btnHeight - 30;
-        const x = Math.random() * maxX;
-        const y = Math.random() * maxY;
+      if (noClicks < 3) {
+        // Wiggle/shuffle No button slightly instead of flying away
+        const shift = (noClicks % 2 === 0 ? 20 : -20); 
+        noBtn.style.marginLeft = shift + "px";
 
-        noBtn.style.left = x + "px";
-        noBtn.style.top = y + "px";
-        noBtn.style.transform = "scale(1.2)";
-        setTimeout(()=> noBtn.style.transform="scale(1)",200);
-
-        // Messages for each attempt
+        // Messages
         if (noClicks === 1) msgBox.textContent = "😢 You can’t click Nooooo!";
         if (noClicks === 2) msgBox.textContent = "🙏 Please don’t click Nooo...";
-        if (noClicks === 3) msgBox.textContent = "💔 Last warning... don’t press No!";
         msgBox.classList.add("show");
       } else {
-        // Convert to Yes after 4th try
+        // Turn into another Yes button next to first one
         noBtn.textContent = "Yes";
         noBtn.classList.remove("no-btn");
         noBtn.classList.add("yes-btn");
         msgBox.textContent = "😏 Now you have only Yes options!";
-        noBtn.addEventListener("click", () => {
-          window.location.href = "home.html";
-        });
+        noBtn.onclick = () => window.location.href = "home.html";
       }
-    });
-
-    // Place No button initially near Yes
-    window.addEventListener("load", () => {
-      const rect = yesBtn.getBoundingClientRect();
-      noBtn.style.left = rect.right + 20 + "px";
-      noBtn.style.top = rect.top + "px";
     });
   </script>
 </body>
