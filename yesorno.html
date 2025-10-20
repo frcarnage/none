@@ -2,77 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
-  <title>Do You Love Meeee? 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sorry Na 💖</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       text-align: center;
       color: white;
       overflow: hidden;
       position: relative;
+      padding: 20px;
     }
 
     h1 {
       font-family: 'Pacifico', cursive;
-      font-size: 2.2rem;
-      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
       text-shadow: 0 4px 12px rgba(0,0,0,0.4);
       user-select: none;
-      padding: 0 1rem;
       animation: fadeIn 1.2s ease forwards;
     }
 
-    .buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      position: relative;
-    }
-
-    button {
+    .subtitle {
       font-size: 1.2rem;
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.3s, background 0.3s, margin 0.3s;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      animation: fadeIn 1.5s ease forwards;
     }
-
-    .yes-btn {
-      background: #4CAF50;
-      color: white;
-    }
-    .yes-btn:hover {
-      background: #45a049;
-      transform: scale(1.1);
-    }
-
-    .no-btn {
-      background: #f44336;
-      color: white;
-    }
-
-    #msg {
-      margin-top: 2rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      min-height: 2.2em;
-      padding: 0 1rem;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    #msg.show { opacity: 1; }
 
     /* Popup styles */
     .popup {
@@ -82,31 +51,45 @@
       transform: translate(-50%, -50%);
       background: rgba(255, 255, 255, 0.95);
       color: #333;
-      padding: 1.5rem;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
       z-index: 100;
       text-align: center;
-      max-width: 80%;
-      animation: popIn 0.4s ease forwards;
+      max-width: 85%;
+      width: 400px;
+      animation: popIn 0.5s ease forwards;
     }
 
     .popup h2 {
       margin-top: 0;
       color: #ee0979;
       font-family: 'Pacifico', cursive;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .popup p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
     }
 
     .popup button {
       background: #ee0979;
       color: white;
-      margin-top: 1rem;
-      padding: 0.5rem 1.2rem;
-      font-size: 1rem;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(238, 9, 121, 0.4);
     }
 
     .popup button:hover {
       background: #d1086a;
+      transform: scale(1.05);
     }
 
     .popup-overlay {
@@ -115,22 +98,26 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       z-index: 99;
     }
 
     /* Floating background hearts */
     .heart-bg {
       position: absolute;
-      color: rgba(255,255,255,0.2);
-      font-size: 2rem;
-      animation: float 6s ease-in-out infinite;
+      color: rgba(255,255,255,0.3);
+      font-size: 2.5rem;
+      animation: float 8s ease-in-out infinite;
       user-select: none;
+      z-index: 1;
     }
-    .heart-bg:nth-child(1){ top:10%; left:15%; animation-delay:0s;}
-    .heart-bg:nth-child(2){ top:70%; left:25%; animation-delay:1s;}
-    .heart-bg:nth-child(3){ top:40%; left:80%; animation-delay:2s;}
-    .heart-bg:nth-child(4){ top:20%; left:60%; animation-delay:3s;}
+
+    .heart-bg:nth-child(1){ top:10%; left:10%; animation-delay:0s;}
+    .heart-bg:nth-child(2){ top:15%; left:85%; animation-delay:1s;}
+    .heart-bg:nth-child(3){ top:70%; left:15%; animation-delay:2s;}
+    .heart-bg:nth-child(4){ top:80%; left:80%; animation-delay:3s;}
+    .heart-bg:nth-child(5){ top:40%; left:70%; animation-delay:4s;}
+    .heart-bg:nth-child(6){ top:60%; left:30%; animation-delay:5s;}
 
     @keyframes fadeIn {
       from {opacity:0; transform:translateY(-20px);}
@@ -138,22 +125,42 @@
     }
     
     @keyframes float {
-      0% { transform: translateY(0);}
-      50% { transform: translateY(-15px);}
-      100% { transform: translateY(0);}
+      0% { transform: translateY(0) rotate(0deg);}
+      50% { transform: translateY(-20px) rotate(10deg);}
+      100% { transform: translateY(0) rotate(0deg);}
     }
     
     @keyframes popIn {
-      from {opacity:0; transform:translate(-50%, -50%) scale(0.8);}
+      from {opacity:0; transform:translate(-50%, -50%) scale(0.7);}
       to {opacity:1; transform:translate(-50%, -50%) scale(1);}
     }
 
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .tap-instruction {
+      margin-top: 2rem;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      border-radius: 50px;
+      animation: pulse 2s infinite;
+    }
+
     @media (max-width: 600px) {
-      h1 { font-size: 1.6rem; }
-      button { font-size: 1rem; padding: 0.6rem 1.2rem; }
-      #msg { font-size: 0.95rem; }
-      .popup { max-width: 90%; padding: 1rem; }
-      .popup h2 { font-size: 1.3rem; }
+      h1 { font-size: 2rem; }
+      .subtitle { font-size: 1rem; }
+      .popup { 
+        max-width: 90%; 
+        padding: 1.5rem; 
+        width: 320px;
+      }
+      .popup h2 { font-size: 1.7rem; }
+      .popup p { font-size: 1.1rem; }
+      .tap-instruction { font-size: 1rem; }
     }
   </style>
 </head>
@@ -163,26 +170,25 @@
   <span class="heart-bg">💞</span>
   <span class="heart-bg">💕</span>
   <span class="heart-bg">❤️</span>
+  <span class="heart-bg">💘</span>
+  <span class="heart-bg">💝</span>
   
-  <h1>Do you loveeeeeeeee meeeee? 💖</h1>
-
-  <div class="buttons" id="btnContainer">
-    <button class="yes-btn" id="yesBtn">Yes</button>
-    <button class="no-btn" id="noBtn">No</button>
-  </div>
-
-  <div id="msg"></div>
+  <h1>Sorry Na... 💖</h1>
+  <p class="subtitle">I'm really sorry for whatever I did</p>
+  
+  <div class="tap-instruction">Tap anywhere for more apologies</div>
 
   <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const msgBox = document.getElementById("msg");
-    const btnContainer = document.getElementById("btnContainer");
-    let noClicks = 0;
     let popupCount = 0;
+    let lastPopupTime = 0;
+    const popupCooldown = 500; // milliseconds
 
     // Function to create a popup
     function createPopup() {
+      const now = Date.now();
+      if (now - lastPopupTime < popupCooldown) return; // Prevent spam
+      lastPopupTime = now;
+      
       popupCount++;
       
       // Create overlay
@@ -196,24 +202,35 @@
       
       // Different messages for variety
       const messages = [
-        "Sorry naa... Please say yes! 🥺",
-        "Are you sure? I really love you! 💕",
-        "Don't break my heart... say yes! 💔",
-        "I'll keep asking until you say yes! 😘",
-        "You're making me sad... please? 😢",
-        "I promise I'll be the best for you! 💖",
-        "My heart can't take a no... please! 💘",
-        "I'll love you forever if you say yes! 💞",
-        "Don't you feel the love between us? 💓",
-        "I'll keep popping up until you say yes! 💝"
+        "Sorry naa... I didn't mean to upset you 🥺",
+        "I'm really sorry, please forgive me 💕",
+        "Sorry na, I promise I'll do better 💔",
+        "I feel terrible for making you mad 😘",
+        "Sorry na, you mean everything to me 😢",
+        "I'm genuinely sorry for my mistake 💖",
+        "Sorry na, I'll make it up to you 💘",
+        "Please accept my apology, I love you 💞",
+        "Sorry na, I hate when you're upset with me 💓",
+        "I'm sorry from the bottom of my heart 💝",
+        "Sorry na, I'll be more careful next time 🥺",
+        "Please don't stay mad at me, I'm sorry 💕",
+        "Sorry na, I value you more than anything 💔",
+        "I'm really sorry for being insensitive 😘",
+        "Sorry na, I never want to hurt you 😢",
+        "I apologize sincerely, please forgive me 💖",
+        "Sorry na, you're too important to me 💘",
+        "I'm sorry for my behavior, it won't happen again 💞",
+        "Sorry na, I'll learn from this mistake 💓",
+        "I'm truly sorry, your happiness means everything 💝"
       ];
       
-      const message = messages[Math.min(popupCount - 1, messages.length - 1)];
+      const messageIndex = (popupCount - 1) % messages.length;
+      const message = messages[messageIndex];
       
       popup.innerHTML = `
-        <h2>Sorry naa... 💖</h2>
+        <h2>Sorry Na... 💖</h2>
         <p>${message}</p>
-        <button class="close-popup">OK</button>
+        <button class="close-popup">I understand</button>
       `;
       
       document.body.appendChild(popup);
@@ -224,34 +241,33 @@
         document.body.removeChild(popup);
         document.body.removeChild(overlay);
       });
+      
+      // Also close when clicking overlay
+      overlay.addEventListener("click", () => {
+        document.body.removeChild(popup);
+        document.body.removeChild(overlay);
+      });
     }
 
-    yesBtn.addEventListener("click", () => {
-      window.location.href = "home.html"; 
+    // Create first popup automatically after a delay
+    setTimeout(() => {
+      createPopup();
+    }, 1000);
+
+    // Create popup when clicking/tapping anywhere on the page
+    document.body.addEventListener('click', (e) => {
+      // Don't create popup if clicking on an existing popup or its button
+      if (e.target.closest('.popup') || e.target.closest('.close-popup')) {
+        return;
+      }
+      createPopup();
     });
 
-    noBtn.addEventListener("click", () => {
-      noClicks++;
-      
-      // Create a popup every time "No" is clicked
-      createPopup();
-      
-      if (noClicks < 3) {
-        // Wiggle/shuffle No button slightly instead of flying away
-        const shift = (noClicks % 2 === 0 ? 20 : -20); 
-        noBtn.style.marginLeft = shift + "px";
-
-        // Messages
-        if (noClicks === 1) msgBox.textContent = "😢 You can't click Nooooo!";
-        if (noClicks === 2) msgBox.textContent = "🙏 Please don't click Nooo...";
-        msgBox.classList.add("show");
-      } else {
-        // Turn into another Yes button next to first one
-        noBtn.textContent = "Yes";
-        noBtn.classList.remove("no-btn");
-        noBtn.classList.add("yes-btn");
-        msgBox.textContent = "😏 Now you have only Yes options!";
-        noBtn.onclick = () => window.location.href = "xyz.html";
+    // Also create popups on spacebar press
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        createPopup();
       }
     });
   </script>
