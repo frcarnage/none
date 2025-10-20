@@ -18,6 +18,7 @@
       text-align: center;
       color: white;
       overflow: hidden;
+      position: relative;
     }
 
     h1 {
@@ -73,6 +74,51 @@
     }
     #msg.show { opacity: 1; }
 
+    /* Popup styles */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 100;
+      text-align: center;
+      max-width: 80%;
+      animation: popIn 0.4s ease forwards;
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #ee0979;
+      font-family: 'Pacifico', cursive;
+    }
+
+    .popup button {
+      background: #ee0979;
+      color: white;
+      margin-top: 1rem;
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+    }
+
+    .popup button:hover {
+      background: #d1086a;
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
     /* Floating background hearts */
     .heart-bg {
       position: absolute;
@@ -90,16 +136,24 @@
       from {opacity:0; transform:translateY(-20px);}
       to {opacity:1; transform:translateY(0);}
     }
+    
     @keyframes float {
       0% { transform: translateY(0);}
       50% { transform: translateY(-15px);}
       100% { transform: translateY(0);}
+    }
+    
+    @keyframes popIn {
+      from {opacity:0; transform:translate(-50%, -50%) scale(0.8);}
+      to {opacity:1; transform:translate(-50%, -50%) scale(1);}
     }
 
     @media (max-width: 600px) {
       h1 { font-size: 1.6rem; }
       button { font-size: 1rem; padding: 0.6rem 1.2rem; }
       #msg { font-size: 0.95rem; }
+      .popup { max-width: 90%; padding: 1rem; }
+      .popup h2 { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -125,6 +179,52 @@
     const msgBox = document.getElementById("msg");
     const btnContainer = document.getElementById("btnContainer");
     let noClicks = 0;
+    let popupCount = 0;
+
+    // Function to create a popup
+    function createPopup() {
+      popupCount++;
+      
+      // Create overlay
+      const overlay = document.createElement("div");
+      overlay.className = "popup-overlay";
+      document.body.appendChild(overlay);
+      
+      // Create popup
+      const popup = document.createElement("div");
+      popup.className = "popup";
+      
+      // Different messages for variety
+      const messages = [
+        "Sorry naa... Please say yes! 🥺",
+        "Are you sure? I really love you! 💕",
+        "Don't break my heart... say yes! 💔",
+        "I'll keep asking until you say yes! 😘",
+        "You're making me sad... please? 😢",
+        "I promise I'll be the best for you! 💖",
+        "My heart can't take a no... please! 💘",
+        "I'll love you forever if you say yes! 💞",
+        "Don't you feel the love between us? 💓",
+        "I'll keep popping up until you say yes! 💝"
+      ];
+      
+      const message = messages[Math.min(popupCount - 1, messages.length - 1)];
+      
+      popup.innerHTML = `
+        <h2>Sorry naa... 💖</h2>
+        <p>${message}</p>
+        <button class="close-popup">OK</button>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      // Add event listener to close button
+      const closeBtn = popup.querySelector(".close-popup");
+      closeBtn.addEventListener("click", () => {
+        document.body.removeChild(popup);
+        document.body.removeChild(overlay);
+      });
+    }
 
     yesBtn.addEventListener("click", () => {
       window.location.href = "home.html"; 
@@ -132,14 +232,18 @@
 
     noBtn.addEventListener("click", () => {
       noClicks++;
+      
+      // Create a popup every time "No" is clicked
+      createPopup();
+      
       if (noClicks < 3) {
         // Wiggle/shuffle No button slightly instead of flying away
         const shift = (noClicks % 2 === 0 ? 20 : -20); 
         noBtn.style.marginLeft = shift + "px";
 
         // Messages
-        if (noClicks === 1) msgBox.textContent = "😢 You can’t click Nooooo!";
-        if (noClicks === 2) msgBox.textContent = "🙏 Please don’t click Nooo...";
+        if (noClicks === 1) msgBox.textContent = "😢 You can't click Nooooo!";
+        if (noClicks === 2) msgBox.textContent = "🙏 Please don't click Nooo...";
         msgBox.classList.add("show");
       } else {
         // Turn into another Yes button next to first one
