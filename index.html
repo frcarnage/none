@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>💖 Just for Youuuu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -63,6 +64,10 @@
     button:hover {
       background: #ff4757;
     }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
     #message {
       margin-top: 15px;
       color: #777;
@@ -72,6 +77,10 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -83,28 +92,28 @@
     <p id="message"></p>
   </div>
 
-  <script type="module">
+  <script>
     // Disable right-click context menu globally
     document.addEventListener('contextmenu', e => e.preventDefault());
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    import { getDatabase, ref, get, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+    // Import Firebase modules from CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, set, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // Your Firebase configuration
     const firebaseConfig = {
-  apiKey: "AIzaSyARj81UDeVpQK4zkigUq7XI4jqXCYKbIqs",
-  authDomain: "drivya-a3.firebaseapp.com",
-  databaseURL: "https://drivya-a3-default-rtdb.firebaseio.com",
-  projectId: "drivya-a3",
-  storageBucket: "drivya-a3.firebasestorage.app",
-  messagingSenderId: "168811593117",
-  appId: "1:168811593117:web:2ff0a2ea6b444b1a4a0374",
-  measurementId: "G-0H6DY7R0W2"
+      apiKey: "AIzaSyARj81UDeVpQK4zkigUq7XI4jqXCYKbIqs",
+      authDomain: "drivya-a3.firebaseapp.com",
+      databaseURL: "https://drivya-a3-default-rtdb.firebaseio.com",
+      projectId: "drivya-a3",
+      storageBucket: "drivya-a3.firebasestorage.app",
+      messagingSenderId: "168811593117",
+      appId: "1:168811593117:web:2ff0a2ea6b444b1a4a0374",
+      measurementId: "G-0H6DY7R0W2"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getDatabase(app);
 
     const MAX_DEVICES = 3;
@@ -115,11 +124,13 @@
     const messageElem = document.getElementById("message");
     const passwordScreen = document.getElementById("passwordScreen");
     const unlockBtn = document.getElementById("unlockBtn");
+    const passInput = document.getElementById("pass");
 
+    // Simple device ID generation (fallback for browsers without crypto.randomUUID)
     function getDeviceId() {
       let id = localStorage.getItem(DEVICE_KEY);
       if(!id){
-        id = crypto.randomUUID();
+        id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem(DEVICE_KEY, id);
       }
       return id;
@@ -127,7 +138,12 @@
 
     async function registerDevice(deviceId) {
       const deviceRef = ref(db, `activeDevices/${deviceId}`);
-      await set(deviceRef, { timestamp: Date.now() });
+      await set(deviceRef, { 
+        timestamp: Date.now(),
+        registeredAt: new Date().toISOString()
+      });
+      
+      // Set up disconnect handler
       onDisconnect(deviceRef).remove();
     }
 
@@ -135,34 +151,79 @@
       try {
         const deviceRef = ref(db, `activeDevices/${deviceId}`);
         await remove(deviceRef);
-      } catch (e) {}
+      } catch (error) {
+        console.log("Error unregistering device:", error);
+      }
+    }
+
+    function setLoading(loading) {
+      if (loading) {
+        unlockBtn.disabled = true;
+        unlockBtn.textContent = "Checking...";
+        passwordScreen.classList.add('loading');
+      } else {
+        unlockBtn.disabled = false;
+        unlockBtn.textContent = "Unlock 💖";
+        passwordScreen.classList.remove('loading');
+      }
     }
 
     async function checkPassword() {
-      const input = document.getElementById("pass").value.trim();
-      if(input !== PASSWORD){
+      const input = passInput.value.trim();
+      
+      if (!input) {
+        messageElem.textContent = "⚠️ Please enter password!";
+        return;
+      }
+      
+      if (input !== PASSWORD) {
         messageElem.textContent = "❌ Wrong password!";
         return;
       }
-      const deviceId = getDeviceId();
-      const devicesRef = ref(db, "activeDevices");
-      const snapshot = await get(devicesRef);
-      const devices = snapshot.val() || {};
-      const deviceIds = Object.keys(devices);
-      if(deviceIds.includes(deviceId)) {
-        // Already registered device — proceed with animation, welcome, redirect
+
+      setLoading(true);
+      messageElem.textContent = "🔐 Checking access...";
+
+      try {
+        const deviceId = getDeviceId();
+        const devicesRef = ref(db, "activeDevices");
+        const snapshot = await get(devicesRef);
+        const devices = snapshot.val() || {};
+        const deviceIds = Object.keys(devices);
+        
+        console.log("Current devices:", deviceIds);
+        console.log("My device ID:", deviceId);
+
+        // Check if this device is already registered
+        if (deviceIds.includes(deviceId)) {
+          messageElem.textContent = "✅ Welcome back!";
+          localStorage.setItem(ACCESS_KEY, "true");
+          playSuccessAnimationAndRedirect();
+          return;
+        }
+
+        // Check device limit
+        if (deviceIds.length >= MAX_DEVICES) {
+          messageElem.textContent = "🚫 Maximum 3 devices allowed!";
+          passwordScreen.innerHTML = `
+            <h2>🚫 Access Limit Exceeded</h2>
+            <p>Maximum ${MAX_DEVICES} devices allowed</p>
+            <p style="font-size: 12px; color: #777;">Your device ID: ${deviceId}</p>
+          `;
+          return;
+        }
+
+        // Register new device
+        messageElem.textContent = "✅ Registering device...";
+        await registerDevice(deviceId);
         localStorage.setItem(ACCESS_KEY, "true");
         playSuccessAnimationAndRedirect();
-        return;
+
+      } catch (error) {
+        console.error("Firebase error:", error);
+        messageElem.textContent = "❌ Network error. Please try again.";
+        setLoading(false);
       }
-      if(deviceIds.length >= MAX_DEVICES) {
-        passwordScreen.innerHTML = "<h2>🚫 Access Limit Exceeded (Max 3 Devices)</h2>";
-        return;
-      }
-      // Register new device, then animate and redirect
-      await registerDevice(deviceId);
-      localStorage.setItem(ACCESS_KEY, "true");
-      playSuccessAnimationAndRedirect();
     }
 
     function playSuccessAnimationAndRedirect() {
@@ -170,25 +231,56 @@
       passwordScreen.classList.add("fade-out");
       
       // Show popup welcome message
-      alert("Welcome Anshikaa 🤍💝💖💗");
-      
-      // Redirect after animation duration (800ms)
       setTimeout(() => {
-        window.location.href = "yesorno.html";
-      }, 850);
+        alert("Welcome Anshikaa 🤍💝💖💗");
+        
+        // Redirect after animation
+        setTimeout(() => {
+          window.location.href = "yesorno.html";
+        }, 500);
+      }, 800);
     }
 
+    // Event listeners
     unlockBtn.addEventListener("click", checkPassword);
 
-    // Disable right click is already done globally
+    // Allow Enter key to submit
+    passInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        checkPassword();
+      }
+    });
 
-    // Unregister device on unload to maintain count
+    // Clear message when user starts typing
+    passInput.addEventListener("input", () => {
+      messageElem.textContent = "";
+    });
+
+    // Unregister device when page is closed/refreshed
     window.addEventListener("beforeunload", () => {
       const deviceId = localStorage.getItem(DEVICE_KEY);
-      if(deviceId){
+      if (deviceId) {
+        // Use sendBeacon for more reliable unregistration
+        navigator.sendBeacon = navigator.sendBeacon || function() { return false; };
         unregisterDevice(deviceId);
       }
     });
+
+    // Handle page visibility change (tab switch)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        const deviceId = localStorage.getItem(DEVICE_KEY);
+        if (deviceId) {
+          unregisterDevice(deviceId);
+        }
+      }
+    });
+
+    // Focus on password input when page loads
+    window.addEventListener('load', () => {
+      passInput.focus();
+    });
+
   </script>
 </body>
 </html>
