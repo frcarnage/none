@@ -25,22 +25,7 @@
       overflow: hidden;
       position: relative;
       padding: 20px;
-    }
-
-    h1 {
-      font-family: 'Pacifico', cursive;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      user-select: none;
-      animation: fadeIn 1.2s ease forwards;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-      animation: fadeIn 1.5s ease forwards;
+      cursor: pointer;
     }
 
     /* Popup styles */
@@ -142,17 +127,19 @@
     }
 
     .tap-instruction {
-      margin-top: 2rem;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 1.1rem;
       background: rgba(255,255,255,0.2);
       padding: 10px 20px;
       border-radius: 50px;
       animation: pulse 2s infinite;
+      z-index: 10;
     }
 
     @media (max-width: 600px) {
-      h1 { font-size: 2rem; }
-      .subtitle { font-size: 1rem; }
       .popup { 
         max-width: 90%; 
         padding: 1.5rem; 
@@ -173,15 +160,12 @@
   <span class="heart-bg">💘</span>
   <span class="heart-bg">💝</span>
   
-  <h1>Sorry Na... 💖</h1>
-  <p class="subtitle">I'm really sorry for whatever I did</p>
-  
-  <div class="tap-instruction">Tap anywhere for more apologies</div>
+  <div class="tap-instruction">Click anywhere for more apologies</div>
 
   <script>
     let popupCount = 0;
     let lastPopupTime = 0;
-    const popupCooldown = 500; // milliseconds
+    const popupCooldown = 300; // milliseconds
 
     // Function to create a popup
     function createPopup() {
@@ -202,26 +186,7 @@
       
       // Different messages for variety
       const messages = [
-        "Sorry naa... I didn't mean to upset you 🥺",
-        "I'm really sorry, please forgive me 💕",
-        "Sorry na, I promise I'll do better 💔",
-        "I feel terrible for making you mad 😘",
-        "Sorry na, you mean everything to me 😢",
-        "I'm genuinely sorry for my mistake 💖",
-        "Sorry na, I'll make it up to you 💘",
-        "Please accept my apology, I love you 💞",
-        "Sorry na, I hate when you're upset with me 💓",
-        "I'm sorry from the bottom of my heart 💝",
-        "Sorry na, I'll be more careful next time 🥺",
-        "Please don't stay mad at me, I'm sorry 💕",
-        "Sorry na, I value you more than anything 💔",
-        "I'm really sorry for being insensitive 😘",
-        "Sorry na, I never want to hurt you 😢",
-        "I apologize sincerely, please forgive me 💖",
-        "Sorry na, you're too important to me 💘",
-        "I'm sorry for my behavior, it won't happen again 💞",
-        "Sorry na, I'll learn from this mistake 💓",
-        "I'm truly sorry, your happiness means everything 💝"
+        "Sorry naa😓😓😓💔💔💔",
       ];
       
       const messageIndex = (popupCount - 1) % messages.length;
@@ -249,10 +214,10 @@
       });
     }
 
-    // Create first popup automatically after a delay
-    setTimeout(() => {
+    // Create first popup immediately when page loads
+    window.addEventListener('load', () => {
       createPopup();
-    }, 1000);
+    });
 
     // Create popup when clicking/tapping anywhere on the page
     document.body.addEventListener('click', (e) => {
@@ -270,6 +235,11 @@
         createPopup();
       }
     });
+
+    // Create popups automatically every few seconds
+    setInterval(() => {
+      createPopup();
+    }, 5000); // New popup every 5 seconds
   </script>
 </body>
 </html>
