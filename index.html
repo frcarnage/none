@@ -130,6 +130,8 @@
     function checkPassword() {
       const input = passInput.value.trim();
       
+      console.log("Button clicked! Password entered:", input);
+      
       if (!input) {
         messageElem.textContent = "⚠️ Please enter password!";
         return;
@@ -141,46 +143,17 @@
       }
 
       setLoading(true);
-      messageElem.textContent = "🔐 Checking access...";
+      messageElem.textContent = "🔐 Access granted!";
 
-      // Simulate async check with timeout
+      // Direct redirect without device checks
       setTimeout(() => {
-        const deviceId = getDeviceId();
-        
-        // Check device limit using localStorage (simplified)
-        const storedDevices = JSON.parse(localStorage.getItem('registeredDevices') || '[]');
-        
-        if (storedDevices.includes(deviceId)) {
-          // Already registered device
-          messageElem.textContent = "✅ Welcome back!";
-          localStorage.setItem(ACCESS_KEY, "true");
-          playSuccessAnimationAndRedirect();
-          return;
-        }
-
-        // Check device limit (max 3)
-        if (storedDevices.length >= 3) {
-          messageElem.textContent = "🚫 Maximum 3 devices allowed!";
-          passwordScreen.innerHTML = `
-            <h2>🚫 Access Limit Exceeded</h2>
-            <p>Maximum 3 devices allowed</p>
-            <p style="font-size: 12px; color: #777;">Your device ID: ${deviceId}</p>
-          `;
-          setLoading(false);
-          return;
-        }
-
-        // Register new device
-        storedDevices.push(deviceId);
-        localStorage.setItem('registeredDevices', JSON.stringify(storedDevices));
-        
-        messageElem.textContent = "✅ Device registered!";
-        localStorage.setItem(ACCESS_KEY, "true");
         playSuccessAnimationAndRedirect();
       }, 1000);
     }
 
     function playSuccessAnimationAndRedirect() {
+      console.log("Playing success animation...");
+      
       // Fade out screen container with animation
       passwordScreen.classList.add("fade-out");
       
@@ -188,8 +161,9 @@
       setTimeout(() => {
         alert("Welcome Anshikaa 🤍💝💖💗");
         
-        // Redirect after animation
+        // Redirect to the sorry na popups page
         setTimeout(() => {
+          console.log("Redirecting to sorry na popups...");
           window.location.href = "sorry-na-popups.html";
         }, 500);
       }, 800);
@@ -213,12 +187,8 @@
     // Focus on password input when page loads
     window.addEventListener('load', () => {
       passInput.focus();
+      console.log("Page loaded - ready for password input");
     });
-
-    // Debug info
-    console.log("Page loaded successfully");
-    console.log("Password:", PASSWORD);
-    console.log("Device ID:", getDeviceId());
 
   </script>
 </body>
